@@ -56,7 +56,7 @@ def draw_concentric_triangles(radii, colors_big, colors_small):
 
 
 #rads = [450,400, 350, 300, 250, 200, 150]
-rads = list(reversed(list(range(100, 2000, 100))))
+rads = list(reversed(list(range(50, 1000, 50))))
 print(rads)
 
 t1 = draw_concentric_triangles(rads, 
@@ -78,12 +78,9 @@ t2 = t2.rotate(180, expand = True)
 #t2 = t2.resize(new_size) #.rotate(108)
 space = 50
 
-back = Image.new("RGBA", (1050, 1680), black)
 img = Image.new("RGBA", (t1.width, (t1.height * 2) + space), black)
 
 img.paste(t2, (0,0), t2)
 img.paste(t1, (0,t1.height+ space), t1)
-#t2 = t2.resize(new_size) #.rotate(108)
-#back.paste(img, (0,0))
-img.save("my_pic.png", 'PNG')
+img.save("my_pic.JPEG", 'JPEG')
 
