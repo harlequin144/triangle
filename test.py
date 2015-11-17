@@ -3,7 +3,9 @@ import math
 from PIL import Image
 from PIL import ImageDraw
 
-size = 4096
+import triangle
+
+size = (4096*2)
 
 red = (222, 90, 81, 255) #DE5A51
 blue = (97, 205, 245, 255) #61CDF5
@@ -40,7 +42,7 @@ def draw_concentric_triangles(radii, colors_big, colors_small):
 
     center = (width/2), max_radii
     triangles = [make_triangle_and_subtriangle_points(center, r) for r in radii]
-    print(triangles)
+    #print(triangles)
 
     triangle_image = Image.new('RGBA', img_size)
     draw_tri = ImageDraw.Draw(triangle_image)
@@ -55,32 +57,20 @@ def draw_concentric_triangles(radii, colors_big, colors_small):
 
 
 
-#rads = [450,400, 350, 300, 250, 200, 150]
-rads = list(reversed(list(range(50, 1000, 50))))
-print(rads)
-
-t1 = draw_concentric_triangles(rads, 
-        [white] +  [black, red] * (len(rads) - 1),
-        [white] + [red, black] * (len(rads) - 1))
-
-t2 = draw_concentric_triangles(rads, 
-        [white] +  [black, blue] * (len(rads) - 1),
-        [white] + [blue, black] * (len(rads) - 1))
+size = (4096, triangle.get_height_relative_to_base(4096))
 
 
-t2 = t2.rotate(180, expand = True)
+t1 = triangle.fit_triangle_into_rect(size, blue)
+t1_image = t1.render_image(size)
 
-#print(t1.size)
+t2 = t1.make_right_subtriangle(white)
+t2_image = t2.render_image(size)
 
-#height_to_width = t2.size[1] / t2.size[0]
-#new_size = t1.size[0], int(t1.size[0] * height_to_width )
 
-#t2 = t2.resize(new_size) #.rotate(108)
-space = 50
+img = Image.new("RGBA", size, black)
+img.paste(t1_image, (0,0), t1_image)
+img.paste(t2_image, (0,0), t2_image)
 
-img = Image.new("RGBA", (t1.width, (t1.height * 2) + space), black)
 
-img.paste(t2, (0,0), t2)
-img.paste(t1, (0,t1.height+ space), t1)
-img.save("my_pic.JPEG", 'JPEG')
+img.save("test.gif", 'gif')
 

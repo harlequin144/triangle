@@ -1,2 +1,4 @@
 *.JPEG
 *.png
+*.gif
+__pycache__
