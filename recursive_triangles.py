@@ -22,7 +22,7 @@ class RecursiveTriangles():
 
         self.image = Image.new("RGBA", size)
 
-        _color = color.get_random_color(color.black)
+        _color = color.get_random_contrasting_color(color.black)
         init_triangle = triangle.fit_triangle_into_rect(size, _color)
 
         triangle_list = self.layer_sexy_triangles(init_triangle, depth)
@@ -41,8 +41,8 @@ class RecursiveTriangles():
             return []
 
         direction = random.choice(list(Direction))
-        color_side = color.get_random_color(parent.get_color())
-        color_up = color.get_random_color(parent.get_color())
+        color_side = color.get_random_contrasting_color(parent.color)
+        color_up = color.get_random_contrasting_color(parent.color)
 
         if direction == Direction.Right:
             side_tri = parent.make_right_subtriangle(color_side)
@@ -63,7 +63,7 @@ class RecursiveTriangles():
 base = int(4096 / 4)
 size = (base, triangle.get_height_relative_to_base(base))
 
-triangles = RecursiveTriangles(size, 4)
+triangles = RecursiveTriangles(size, 8)
 
 img = triangles.get_image()
 

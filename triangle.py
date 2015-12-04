@@ -66,7 +66,7 @@ def get_subtriangle_point(tip_point, verticie_point, subtri_side_len):
 
 class Triangle():
 
-    def __init__(self, top_point, left_point, right_point, color):
+    def __init__(self, top_point, left_point, right_point, color=None):
         self.top = top_point
         self.left = left_point
         self.right = right_point
@@ -74,9 +74,6 @@ class Triangle():
 
     def get_points(self):
         return (self.top, self.left, self.right)
-
-    def get_color(self):
-        return self.color
 
     def render_image(self, container_size):
         img = Image.new('RGBA', container_size)
@@ -121,5 +118,26 @@ class Triangle():
 
         right = get_subtriangle_point(self.top, self.right, side_len)
         left = get_subtriangle_point(self.top, self.left, side_len)
+
+        return Triangle(top, left, right, color)
+
+    def make_half_top_subtriangle(self, color=None):
+        top = self.top
+        left = mid_point(self.top, self.left)
+        right = mid_point(self.top, self.right)
+
+        return Triangle(top, left, right, color)
+
+    def make_half_left_subtriangle(self, color=None):
+        top = mid_point(self.top, self.left)
+        left = self.left
+        right = mid_point(self.left, self.right)
+
+        return Triangle(top, left, right, color)
+
+    def make_half_right_subtriangle(self, color=None):
+        top = mid_point(self.top, self.right)
+        left = mid_point(self.left, self.right)
+        right = self.right
 
         return Triangle(top, left, right, color)

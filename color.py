@@ -29,10 +29,13 @@ colors = [red, blue, white, orange, purp, dgreen, lgreen, burg ]
 def contrasting_colors(color):
     return [c for c in colors if c != color]
 
-def get_random_color(color = None):
+def get_random_contrasting_color(color):
     if color == None:
         return random.choice(colors)
     else:
         return random.choice(contrasting_colors(color))
+
+def get_random_color_not_in_list(not_list):
+    return random.choice([c for c in colors if c not in not_list])
 
 
