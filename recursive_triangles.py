@@ -5,102 +5,73 @@ from PIL import Image
 from PIL import ImageDraw
 
 import triangle
-
-
-red = (222, 90, 81, 255) #DE5A51
-blue = (97, 205, 245, 255) #61CDF5
-white = (242, 241, 237, 255) #F2F1ED
-black = (5,5,5,255) #555
-
-colors = [red, blue, black]
+import color
 
 
 class Direction(enum.Enum):
     Left = 0
     Right = 1
-    #Up = 2
+    # Up = 2
+
 
 class RecursiveTriangles():
 
-    def __init__(self, size, depth = None):
-        #point_dir = Direction.Up
-        if depth == None:
-            depth = random.choice([5,6,7,8,9])
+    def __init__(self, size, depth=None):
+        if depth is None:
+            depth = random.choice([5, 6, 7, 8, 9])
 
-        self.image = Image.new("RGBA", size, white)
+        self.image = Image.new("RGBA", size)
 
-        init_triangle = triangle.fit_triangle_into_rect(size, black)
+        _color = color.get_random_color(color.black)
+        init_triangle = triangle.fit_triangle_into_rect(size, _color)
 
         triangle_list = self.layer_sexy_triangles(init_triangle, depth)
 
-        triangle_list = [init_triangle] +  triangle_list 
+        triangle_list = [init_triangle] + triangle_list
 
         for tri in triangle_list:
             triangle_img = tri.render_image(size)
-            self.image.paste(triangle_img, (0,0), triangle_img)
+            self.image = Image.alpha_composite(self.image, triangle_img)
 
     def get_image(self):
         return self.image
-
 
     def layer_sexy_triangles(self, parent, depth):
         if depth <= 0:
             return []
 
         direction = random.choice(list(Direction))
-        color = colors[depth%3]
+        color_side = color.get_random_color(parent.get_color())
+        color_up = color.get_random_color(parent.get_color())
 
-        #if direction == Direction.Right:
-        #    tri = parent.make_right_subtriangle(color)
-        #elif direction == Direction.Left:
-        #    tri = parent.make_left_subtriangle(color)
-        #elif direction == Direction.Up:
-        #    tri = parent.make_top_subtriangle(color)
-
-        #return [tri] + self.layer_sexy_triangles(tri, depth - 1)
-
-        #color = random.choice(colors)
         if direction == Direction.Right:
-            tri_side = parent.make_right_subtriangle(color)
-            tri_side_subtris = self.layer_sexy_triangles(tri_side, depth - 1)
-            tri_side_list = [tri_side] + tri_side_subtris 
+            side_tri = parent.make_right_subtriangle(color_side)
         else:
-            tri_side = parent.make_right_subtriangle(color)
-            tri_side_subtris = self.layer_sexy_triangles(tri_side, depth - 1)
-            tri_side_list = [tri_side] + tri_side_subtris 
+            side_tri = parent.make_left_subtriangle(color_side)
+        tri_up = parent.make_top_subtriangle(color_up)
 
-        #color = random.choice(colors)
-        tri_up = parent.make_right_subtriangle(color)
+        tri_side_subtris = self.layer_sexy_triangles(side_tri, depth - 1)
         tri_up_subtris = self.layer_sexy_triangles(tri_up, depth - 1)
-        tri_up_list = [tri_up] + tri_up_subtris 
 
-        return tri_side_list + tri_up_list 
+        tri_side_list = [side_tri] + tri_side_subtris
+        tri_up_list = [tri_up] + tri_up_subtris
+
+        return tri_side_list + tri_up_list
 
 
-
-
-
-base = 4096
+# base = int(4096 / 2)
+base = int(4096 / 4)
 size = (base, triangle.get_height_relative_to_base(base))
 
-
-#t1 = triangle.fit_triangle_into_rect(size, blue)
-#t1_image = t1.render_image(size)
-#
-#t2 = t1.make_right_subtriangle(white)
-#t2_image = t2.render_image(size)
-
-
-
-triangles = RecursiveTriangles(size, 10)
+triangles = RecursiveTriangles(size, 4)
 
 img = triangles.get_image()
 
-base = 500
-size = (base, triangle.get_height_relative_to_base(base))
+# base = 500
+# size = (base, triangle.get_height_relative_to_base(base))
 
-img.thumbnail(size, Image.ANTIALIAS)
-img.thumbnail(size)
+# img.thumbnail(size, Image.ANTIALIAS)
+# img.thumbnail(size)
 
-#img.save("test.gif", 'gif')
-img.show()
+img.save("recursive.gif", 'gif')
+# img.show()
