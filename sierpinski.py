@@ -4,6 +4,7 @@ import math
 from collections import deque
 from PIL import Image
 from PIL import ImageDraw
+from PIL import ImageFilter
 
 import triangle
 import color
@@ -22,15 +23,15 @@ class Positions(enum.Enum):
 
 class SierpinskiTriangles():
 
-    def __init__(self, size, depth=None):
+    def __init__(self, size, palet, depth=None):
         if depth is None:
             depth = random.choice([5, 6, 7, 8, 9])
 
         self.image = Image.new("RGBA", size)
 
-        _color1 = color.get_random_contrasting_color(color.black)
-        _color2 = color.get_random_contrasting_color(_color1)
-        _color3 = color.get_random_contrasting_color(_color1)
+        _color1 = color.get_random_contrasting_color(color.black, palet)
+        _color2 = color.get_random_contrasting_color(_color1, palet)
+        _color3 = color.get_random_contrasting_color(_color1, palet)
         colors = [_color1, _color2, _color3]
 
         init_triangle = triangle.fit_triangle_into_rect(size, _color1)
@@ -39,12 +40,8 @@ class SierpinskiTriangles():
 
         triangle_list = [init_triangle] + triangle_list
 
-        for tri in triangle_list:
-            triangle_img = tri.render_image(size)
-            self.image = Image.alpha_composite(self.image, triangle_img)
-
-    def get_image(self):
-        return self.image
+        compositor = triangle.TriangleCompositor(triangle_list)
+        compositor.composite_on_to_image(self.image)
 
     def layer_sexy_triangles(self, parent, depth, colors):
         if depth <= 0:
@@ -79,17 +76,21 @@ class SierpinskiTriangles():
         return triangles + subtriangles1 + subtriangles2 + subtriangles3
 
 
-base = int(4096 / 4)
+base = int(4096 / 2)
 size = (base, triangle.get_height_relative_to_base(base))
+palet = color.color_universe
 
-triangles = SierpinskiTriangles(size, 7)
+triangles = SierpinskiTriangles(size, palet, 8)
 
-img = triangles.get_image()
+img = triangles.image
 
 # base = 500
 # size = (base, triangle.get_height_relative_to_base(base))
 
 # img.thumbnail(size, Image.ANTIALIAS)
 # img.thumbnail(size)
+#img = img.filter(ImageFilter.SMOOTH_MORE)
+#img = img.filter(ImageFilter.SHARPEN)
+#img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
 
 img.save("sierpinski.gif", 'gif')

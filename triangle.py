@@ -4,7 +4,7 @@ from PIL import Image
 from PIL import ImageDraw
 
 
-def fit_triangle_into_rect(dimensions, color):
+def fit_triangle_into_rect(dimensions, color=None):
     base, height = dimensions
 
     if (base % 2) != 0:
@@ -75,6 +75,12 @@ class Triangle():
     def get_points(self):
         return (self.top, self.left, self.right)
 
+    def get_centrid_point(self):
+        """Centrid is my own term. Its the point of intersection of the three
+        lines that each intersect a corner of the triangle and that eminate from
+        it's half angle."""
+        pass
+
     def render_image(self, container_size):
         img = Image.new('RGBA', container_size)
         img_draw = ImageDraw.Draw(img)
@@ -141,3 +147,15 @@ class Triangle():
         right = self.right
 
         return Triangle(top, left, right, color)
+
+
+class TriangleCompositor:
+
+    def __init__(self, triangles):
+        self._triangles = triangles
+
+    def composite_on_to_image(self, image):
+        drawer = ImageDraw.Draw(image)
+
+        for tri in self._triangles:
+            drawer.polygon(tri.get_points(), fill=tri.color)

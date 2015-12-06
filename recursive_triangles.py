@@ -3,6 +3,7 @@ import random
 import math
 from PIL import Image
 from PIL import ImageDraw
+from PIL import ImageFilter
 
 import triangle
 import color
@@ -16,22 +17,23 @@ class Direction(enum.Enum):
 
 class RecursiveTriangles():
 
-    def __init__(self, size, depth=None):
+    def __init__(self, size, color_palet, depth=None):
         if depth is None:
-            depth = random.choice([5, 6, 7, 8, 9])
+            depth = random.choice([5, 6, 7, 8, 9, 10])
 
+        self.palet = color_palet
         self.image = Image.new("RGBA", size)
 
-        _color = color.get_random_contrasting_color(color.black)
+        _color = color.get_random_contrasting_color(color.black, color_palet)
         init_triangle = triangle.fit_triangle_into_rect(size, _color)
 
         triangle_list = self.layer_sexy_triangles(init_triangle, depth)
 
         triangle_list = [init_triangle] + triangle_list
 
-        for tri in triangle_list:
-            triangle_img = tri.render_image(size)
-            self.image = Image.alpha_composite(self.image, triangle_img)
+        compositor = triangle.TriangleCompositor(triangle_list)
+        compositor.composite_on_to_image(self.image)
+
 
     def get_image(self):
         return self.image
@@ -59,19 +61,22 @@ class RecursiveTriangles():
         return tri_side_list + tri_up_list
 
 
-# base = int(4096 / 2)
-base = int(4096 / 4)
+base = int(4096 / 2)
 size = (base, triangle.get_height_relative_to_base(base))
+palet = color.color_universe
 
-triangles = RecursiveTriangles(size, 8)
+triangles = RecursiveTriangles(size, palet, 10)
 
 img = triangles.get_image()
 
 # base = 500
 # size = (base, triangle.get_height_relative_to_base(base))
-
 # img.thumbnail(size, Image.ANTIALIAS)
 # img.thumbnail(size)
 
+img = img.filter(ImageFilter.SMOOTH_MORE)
+#img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
+#img = img.filter(ImageFilter.FIND_EDGES)
+img = img.filter(ImageFilter.SHARPEN)
+
 img.save("recursive.gif", 'gif')
-# img.show()
