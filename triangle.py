@@ -1,10 +1,12 @@
-import math
-
 from PIL import Image
 from PIL import ImageDraw
 
+import math
 
-def fit_triangle_into_rect(dimensions, color=None):
+import color
+
+
+def fit_triangle_into_rect(dimensions, color_layer):
     base, height = dimensions
 
     if (base % 2) != 0:
@@ -19,7 +21,7 @@ def fit_triangle_into_rect(dimensions, color=None):
     left = (0, 0)
     right = (base, 0)
 
-    return Triangle(top, left, right, color)
+    return Triangle(top, left, right, color_layer)
 
 
 def get_base_relative_to_height(height):
@@ -53,8 +55,6 @@ def get_subtriangle_point(tip_point, verticie_point, subtri_side_len):
     y = y_v - y_t
 
     magnitude = math.sqrt(x**2 + y**2)
-    #print('subtri_side_len: ' + str(subtri_side_len))
-    #print('magnitude: ' + str(magnitude))
     x = x / magnitude
     y = y / magnitude
 
@@ -66,11 +66,11 @@ def get_subtriangle_point(tip_point, verticie_point, subtri_side_len):
 
 class Triangle():
 
-    def __init__(self, top_point, left_point, right_point, color=None):
+    def __init__(self, top_point, left_point, right_point, color_layer):
         self.top = top_point
         self.left = left_point
         self.right = right_point
-        self.color = color
+        self.color_layer = color_layer
 
     def get_points(self):
         return (self.top, self.left, self.right)
@@ -81,14 +81,14 @@ class Triangle():
         it's half angle."""
         pass
 
-    def render_image(self, container_size):
-        img = Image.new('RGBA', container_size)
-        img_draw = ImageDraw.Draw(img)
-        img_draw.polygon(self.get_points(), fill=self.color)
+    # def render_image(self, container_size, color_layer):
+    #    img = Image.new('RGBA', container_size)
+    #    img_draw = ImageDraw.Draw(img)
+    #    img_draw.polygon(self.get_points(), fill=color_layer)
 
-        return img
+    #    return img
 
-    def make_right_subtriangle(self, color):
+    def make_right_subtriangle(self, color_layer):
         # top point points right
         top = self.right
         right = self.left
@@ -99,9 +99,9 @@ class Triangle():
 
         left = get_subtriangle_point(self.top, self.left, side_len)
 
-        return Triangle(top, left, right, color)
+        return Triangle(top, left, right, color_layer)
 
-    def make_left_subtriangle(self, color):
+    def make_left_subtriangle(self, color_layer):
         # top point points left
         top = self.left
         left = self.right
@@ -112,9 +112,9 @@ class Triangle():
 
         right = get_subtriangle_point(self.top, self.right, side_len)
 
-        return Triangle(top, left, right, color)
+        return Triangle(top, left, right, color_layer)
 
-    def make_top_subtriangle(self, color):
+    def make_top_subtriangle(self, color_layer):
         # top point points left
         top = self.top
 
@@ -125,28 +125,28 @@ class Triangle():
         right = get_subtriangle_point(self.top, self.right, side_len)
         left = get_subtriangle_point(self.top, self.left, side_len)
 
-        return Triangle(top, left, right, color)
+        return Triangle(top, left, right, color_layer)
 
-    def make_half_top_subtriangle(self, color=None):
+    def make_half_top_subtriangle(self, color_layer=None):
         top = self.top
         left = mid_point(self.top, self.left)
         right = mid_point(self.top, self.right)
 
-        return Triangle(top, left, right, color)
+        return Triangle(top, left, right, color_layer)
 
-    def make_half_left_subtriangle(self, color=None):
+    def make_half_left_subtriangle(self, color_layer=None):
         top = mid_point(self.top, self.left)
         left = self.left
         right = mid_point(self.left, self.right)
 
-        return Triangle(top, left, right, color)
+        return Triangle(top, left, right, color_layer)
 
-    def make_half_right_subtriangle(self, color=None):
+    def make_half_right_subtriangle(self, color_layer=None):
         top = mid_point(self.top, self.right)
         left = mid_point(self.left, self.right)
         right = self.right
 
-        return Triangle(top, left, right, color)
+        return Triangle(top, left, right, color_layer)
 
 
 class TriangleCompositor:
@@ -158,4 +158,6 @@ class TriangleCompositor:
         drawer = ImageDraw.Draw(image)
 
         for tri in self._triangles:
-            drawer.polygon(tri.get_points(), fill=tri.color)
+            c = color.get_color_from_color_layer(tri.color_layer)
+            print(c)
+            drawer.polygon(tri.get_points(), fill=c)

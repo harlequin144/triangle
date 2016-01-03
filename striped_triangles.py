@@ -98,8 +98,7 @@ size = 1000, 1000
 print('here')
 #img.thumbnail(size, Image.ANTIALIAS)
 
-img.save("my_pic.gif", 'gif')
-
+img.save("rendered-images/my_pic.gif", 'gif')
 
 # Use gif. This is the format that is most suitable for simple shapes with large
 # spanns of one color

@@ -23,25 +23,30 @@ class Positions(enum.Enum):
 
 class SierpinskiTriangles():
 
-    def __init__(self, size, palet, depth=None):
+    def __init__(self, size, palet=color.ColorLayers, depth=None):
         if depth is None:
             depth = random.choice([5, 6, 7, 8, 9])
 
-        self.image = Image.new("RGBA", size)
+        l1 = color.get_random_contrasting_color(color.ColorLayers.black, palet)
+        l2 = color.get_random_contrasting_color(l1, palet)
+        l3 = color.get_random_contrasting_color(l1, palet)
+        selected_colors = [l1, l2, l3]
 
-        _color1 = color.get_random_contrasting_color(color.black, palet)
-        _color2 = color.get_random_contrasting_color(_color1, palet)
-        _color3 = color.get_random_contrasting_color(_color1, palet)
-        colors = [_color1, _color2, _color3]
+        init_triangle = triangle.fit_triangle_into_rect(size, l1)
 
-        init_triangle = triangle.fit_triangle_into_rect(size, _color1)
+        self._triangle_list = self.layer_sexy_triangles(
+            init_triangle, depth, selected_colors)
 
-        triangle_list = self.layer_sexy_triangles(init_triangle, depth, colors)
+        self._triangle_list = [init_triangle] + self._triangle_list
 
-        triangle_list = [init_triangle] + triangle_list
+    def make_image(self):
+        image = Image.new("RGBA", size)
+        compositor = triangle.TriangleCompositor(self._triangle_list)
+        compositor.composite_on_to_image(image)
+        return image
 
-        compositor = triangle.TriangleCompositor(triangle_list)
-        compositor.composite_on_to_image(self.image)
+    def get_triangles(self):
+        return self._triangle_list
 
     def layer_sexy_triangles(self, parent, depth, colors):
         if depth <= 0:
@@ -54,13 +59,9 @@ class SierpinskiTriangles():
         triangles = list([t1, t2, t3])
         random.shuffle(triangles)
 
-        triangles[0].color = colors[0]
-        triangles[1].color = colors[1]
-        triangles[2].color = colors[1]
-
-        #triangles[0].color = color.get_random_contrasting_color(colors[0])
-        #triangles[1].color = color.get_random_contrasting_color(colors[0])
-        #triangles[2].color = color.get_random_contrasting_color(colors[0])
+        triangles[0].color_layer = colors[0]
+        triangles[1].color_layer = colors[1]
+        triangles[2].color_layer = colors[1]
 
         c = deque(colors)
         c.rotate(1)
@@ -76,21 +77,21 @@ class SierpinskiTriangles():
         return triangles + subtriangles1 + subtriangles2 + subtriangles3
 
 
-base = int(4096 / 2)
-size = (base, triangle.get_height_relative_to_base(base))
-palet = color.color_universe
+if __name__ == "__main__":
+    base = int(4096 / 2)
+    size = (base, triangle.get_height_relative_to_base(base))
 
-triangles = SierpinskiTriangles(size, palet, 8)
+    triangles = SierpinskiTriangles(size, depth=3)
 
-img = triangles.image
+    img = triangles.make_image()
 
-# base = 500
-# size = (base, triangle.get_height_relative_to_base(base))
+    # base = 500
+    # size = (base, triangle.get_height_relative_to_base(base))
 
-# img.thumbnail(size, Image.ANTIALIAS)
-# img.thumbnail(size)
-#img = img.filter(ImageFilter.SMOOTH_MORE)
-#img = img.filter(ImageFilter.SHARPEN)
-#img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
+    # img.thumbnail(size, Image.ANTIALIAS)
+    # img.thumbnail(size)
+    #img = img.filter(ImageFilter.SMOOTH_MORE)
+    #img = img.filter(ImageFilter.SHARPEN)
+    #img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
 
-img.save("sierpinski.gif", 'gif')
+    img.save("rendered-images/sierpinski.gif", 'gif')
