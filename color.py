@@ -52,3 +52,6 @@ def get_random_contrasting_color(color_layer=None, contrast_against=None):
         return random.choice(contrast_against)
     else:
         return random.choice(contrasting_colors(color_layer, contrast_against))
+
+def get_random_sample(num, ommit=None):
+    return random.sample(list(ColorLayers), num)

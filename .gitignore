@@ -3,3 +3,4 @@
 *.gif
 __pycache__
 rendered-images
+*.dxf

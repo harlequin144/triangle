@@ -81,7 +81,7 @@ class Triangle():
         it's half angle."""
         pass
 
-    # def render_image(self, container_size, color_layer):
+    #def render_image(self, container_size, color_layer):
     #    img = Image.new('RGBA', container_size)
     #    img_draw = ImageDraw.Draw(img)
     #    img_draw.polygon(self.get_points(), fill=color_layer)
@@ -145,6 +145,13 @@ class Triangle():
         top = mid_point(self.top, self.right)
         left = mid_point(self.left, self.right)
         right = self.right
+
+        return Triangle(top, left, right, color_layer)
+
+    def make_half_mid_subtriangle(self, color_layer=None):
+        top = mid_point(self.right, self.left)
+        left = mid_point(self.top, self.right)
+        right = mid_point(self.top, self.left)
 
         return Triangle(top, left, right, color_layer)
 
