@@ -45,7 +45,7 @@ def contrasting_colors(color_layer, contrast_against=None):
 
 def get_random_contrasting_color(color_layer=None, contrast_against=None):
     if contrast_against is None:
-        print('in here')
+        #print('in here')
         contrast_against = list(ColorLayers)
 
     if color_layer is None:

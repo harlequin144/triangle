@@ -5,7 +5,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFilter
 
-import triangle
+import math_help
+import polygon
 import color
 
 
@@ -26,13 +27,13 @@ class RecursiveTriangles():
 
         _color = color.get_random_contrasting_color(
             color.ColorLayers.black, palet)
-        init_triangle = triangle.fit_triangle_into_rect(size, _color)
+        init_triangle = polygon.fit_triangle_into_rect(size, _color)
 
         triangle_list = self.layer_sexy_triangles(init_triangle, depth)
 
         triangle_list = [init_triangle] + triangle_list
 
-        compositor = triangle.TriangleCompositor(triangle_list)
+        compositor = polygon.PolygonCompositor(triangle_list)
         compositor.composite_on_to_image(self.image)
 
     def get_image(self):
@@ -63,14 +64,14 @@ class RecursiveTriangles():
 
 if __name__ == "__main__":
     base = int(4096 / 2)
-    size = (base, triangle.get_height_relative_to_base(base))
+    size = (base, math_help.get_triangle_base_relative_to_height(base))
 
     triangles = RecursiveTriangles(size, depth=10)
 
     img = triangles.get_image()
 
     # base = 500
-    # size = (base, triangle.get_height_relative_to_base(base))
+    # size = (base, polygon.get_height_relative_to_base(base))
     # img.thumbnail(size, Image.ANTIALIAS)
     # img.thumbnail(size)
 

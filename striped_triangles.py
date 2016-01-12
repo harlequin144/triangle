@@ -95,7 +95,6 @@ new_size = t1.size[0], t1.size[1]
 
 size = 1000, 1000
 
-print('here')
 #img.thumbnail(size, Image.ANTIALIAS)
 
 img.save("rendered-images/my_pic.gif", 'gif')
