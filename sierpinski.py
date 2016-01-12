@@ -61,51 +61,56 @@ class SierpinskiTriangles():
 
         return [t4] + subtriangles1 + subtriangles2 + subtriangles3
 
-class SierpinskiDiamond():
+
+class SierpinskiDiamonds():
 
     def __init__(self, size, palet, depth):
-        init_triangle = math_help.fit_triangle_into_rect(size, palet[0])
+        init_triangle = polygon.make_diamond_fitting_rect(size, palet[0])
 
         self._colors = palet
-        self._triangle_list = self.layer_sexy_triangles(
-            init_triangle, depth, palet)
 
-        self._triangle_list = [init_triangle] + self._triangle_list
+        self._diamond_list = [init_triangle] +  \
+            self.layer_sexy_diamonds(init_triangle, depth, palet)
 
     def make_image(self):
-        image = Image.new("RGBA", size)
-        compositor = triangle.TriangleCompositor(self._triangle_list)
+        image = Image.new("RGBA", size)  # , (255, 255, 255, 0))
+        compositor = polygon.PolygonCompositor(self._diamond_list)
         compositor.composite_on_to_image(image)
         return image
 
-    def get_triangles(self):
-        return self._triangle_list
+    def get_diamonds(self):
+        return self._diamond_list
 
     def get_layers(self):
         return self._colors
 
-    def layer_sexy_triangles(self, parent, depth, colors):
+    def layer_sexy_diamonds(self, parent, depth, colors):
         if depth <= 0:
             return []
 
-        t1 = parent.make_half_top_subtriangle()
-        t2 = parent.make_half_right_subtriangle()
-        t3 = parent.make_half_left_subtriangle()
-        t4 = parent.make_half_mid_subtriangle()
+        d1 = parent.make_half_top_subdiamond()
+        d2 = parent.make_half_right_subdiamond()
+        d3 = parent.make_half_left_subdiamond()
+        d4 = parent.make_half_bot_subdiamond()
+
+        diamonds = [d1, d2, d3, d4]
+
+        random.shuffle(diamonds)
 
         first_color = colors[0]
         while colors[0] == first_color:
             random.shuffle(colors)
 
-        t4.color_layer = colors[0]
+        diamonds[0].color_layer = colors[0]
+        #diamonds[1].color_layer = colors[0]
+        #diamonds[2].color_layer = colors[1]
+        #diamonds[3].color_layer = colors[2]
 
-        subtriangles1 = self.layer_sexy_triangles(t1, depth - 1, colors)
-        subtriangles2 = self.layer_sexy_triangles(t2, depth - 1, colors)
-        subtriangles3 = self.layer_sexy_triangles(t3, depth - 1, colors)
+        subd1 = self.layer_sexy_diamonds(diamonds[1], depth - 1, colors)
+        subd2 = self.layer_sexy_diamonds(diamonds[2], depth - 1, colors)
+        subd3 = self.layer_sexy_diamonds(diamonds[3], depth - 1, colors)
 
-        return [t4] + subtriangles1 + subtriangles2 + subtriangles3
-
-
+        return [diamonds[0]] + subd1 + subd2 + subd3 
 
 if __name__ == "__main__":
     base = int(4096 / 2)
@@ -113,9 +118,11 @@ if __name__ == "__main__":
 
     selected_colors = color.get_random_sample(3)
 
-    triangles = SierpinskiTriangles(size, selected_colors, depth=7)
+    #triangles = SierpinskiTriangles(size, selected_colors, depth=7)
+    diamonds = SierpinskiDiamonds(size, selected_colors, depth=4)
 
-    img = triangles.make_image()
+    #img = triangles.make_image()
+    img = diamonds .make_image()
 
     # base = 500
     # size = (base, triangle.get_height_relative_to_base(base))

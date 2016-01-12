@@ -115,37 +115,37 @@ class Diamond():
         self.color_layer = color_layer
 
     def get_points(self):
-        return (self.top, self.left, self.right, self.bot)
+        return (self.top, self.left, self.bot, self.right)
 
     def make_half_top_subdiamond(self, color_layer=None):
         top = self.top
-        bot = mid_point(self.top, self.bot)
-        left = mid_point(self.top, self.left)
-        right = mid_point(self.top, self.right)
+        bot = math_help.mid_point(self.top, self.bot)
+        left = math_help.mid_point(self.top, self.left)
+        right = math_help.mid_point(self.top, self.right)
 
         return Diamond(top, left, right, bot, color_layer)
 
     def make_half_left_subdiamond(self, color_layer=None):
-        top = mid_point(self.top, self.left)
-        bot = mid_point(self.bot, self.left)
+        top = math_help.mid_point(self.top, self.left)
+        bot = math_help.mid_point(self.bot, self.left)
         left = self.left
-        right = mid_point(self.left, self.right)
+        right = math_help.mid_point(self.left, self.right)
 
         return Diamond(top, left, right, bot, color_layer)
 
     def make_half_right_subdiamond(self, color_layer=None):
-        top = mid_point(self.top, self.right)
-        bot = mid_point(self.bot, self.right)
-        left = mid_point(self.left, self.right)
+        top = math_help.mid_point(self.top, self.right)
+        bot = math_help.mid_point(self.bot, self.right)
+        left = math_help.mid_point(self.left, self.right)
         right = self.right
 
         return Diamond(top, left, right, bot, color_layer)
 
     def make_half_bot_subdiamond(self, color_layer=None):
-        top = mid_point(self.top, self.bot)
+        top = math_help.mid_point(self.top, self.bot)
         bot = self.bot
-        left = mid_point(self.bot, self.left)
-        right = mid_point(self.bot, self.right)
+        left = math_help.mid_point(self.bot, self.left)
+        right = math_help.mid_point(self.bot, self.right)
 
         return Diamond(top, left, right, bot, color_layer)
 
@@ -163,8 +163,8 @@ def make_diamond_fitting_rect(dimensions, color_layer):
 
     top = (base // 2, height)
     bot = (base // 2, 0)
-    left = (0, 0)
-    right = (base, 0)
+    left = (0, height // 2)
+    right = (base, height // 2)
 
     return Diamond(top, left, right, bot, color_layer)
 

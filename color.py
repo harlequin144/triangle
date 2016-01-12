@@ -3,6 +3,8 @@ from PIL import ImageColor
 import random
 
 
+clear = ImageColor.getrgb('#ffffff')
+
 class ColorLayers(Enum):
     red = 0
     blue = 1
