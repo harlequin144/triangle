@@ -2,15 +2,14 @@ import math
 
 
 def get_triangle_base_relative_to_height(height):
-    return int(2 * height * math.tan(math.radians(18)))
+    return 2 * height * math.tan(math.radians(18))
 
 
 def get_triangle_height_relative_to_base(base):
-    return int((base / 2) / math.tan(math.radians(18)))
+    return (base / 2) / math.tan(math.radians(18))
 
 
 def get_diamond_base_relative_to_height(height):
-
     return get_triangle_base_relative_to_height(height / 2)
 
 
@@ -27,8 +26,8 @@ def point_dist(p1, p2):
 def mid_point(p1, p2):
     x_1, y_1 = p1
     x_2, y_2 = p2
-    m_x = int((x_1 + x_2) / 2)
-    m_y = int((y_1 + y_2) / 2)
+    m_x = (x_1 + x_2) / 2
+    m_y = (y_1 + y_2) / 2
 
     return (m_x, m_y)
 

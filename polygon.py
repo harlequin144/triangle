@@ -1,6 +1,8 @@
 from PIL import Image
 from PIL import ImageDraw
 
+from dxfwrite import DXFEngine as dxf
+
 import math
 
 import color
@@ -103,7 +105,6 @@ def fit_triangle_into_rect(dimensions, color_layer):
 
     return Triangle(top, left, right, color_layer)
 
-
 class Diamond():
 
     def __init__(self, top_point, left_point, right_point, bot_point,
@@ -170,14 +171,46 @@ def make_diamond_fitting_rect(dimensions, color_layer):
 
 
 class PolygonCompositor:
+    def __init__(self, polygon):
+        self._polygon = polygon
 
-    def __init__(self, polygon_list):
-        self._polygon_list = polygon_list
+    def composite_on_image(self):
+        size_x, size_y = self._polygon.container_size
+        size = int(size_x), int(size_y)
+        image = Image.new("RGBA", size)
 
-    def composite_on_to_image(self, image):
         drawer = ImageDraw.Draw(image)
 
-        for poly in self._polygon_list:
+        for poly in self._polygon.polygon_list:
             c = color.get_color_from_color_layer(poly.color_layer)
             # print(c)
-            drawer.polygon(poly.get_points(), fill=c)
+            points = poly.get_points()
+            int_points = [(int(x), int(y)) for (x, y) in points]
+            drawer.polygon(int_points, fill=c)
+
+        # img.thumbnail(size, Image.ANTIALIAS)
+        # img.thumbnail(size)
+
+        #img = img.filter(ImageFilter.SMOOTH_MORE)
+        #img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
+        #img = img.filter(ImageFilter.FIND_EDGES)
+        #img = img.filter(ImageFilter.SHARPEN)
+
+        return image
+     
+    def composite_on_dxf_using_polygons(self):
+        drawing = dxf.drawing()
+
+        for c in self._polygon.get_palet():
+            drawing.add_layer(c.name, color=c.value)
+            #print(c.name)
+        
+        for poly in self._polygon.polygon_list:
+            polyline = dxf.polyline(linetype='DOT', layer=poly.color_layer.name)
+            polyline.add_vertices(poly.get_points())
+            polyline.close()
+            drawing.add(polyline)
+        return drawing
+
+    # def composite_on_dxf_using_lines(self):
+
